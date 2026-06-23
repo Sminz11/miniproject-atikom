@@ -1,0 +1,80 @@
+<div>
+  <h2 class="page-title">Upload History</h2>
+
+  <div class="card mb-6">
+    <div class="flex flex-wrap gap-3">
+      <input [(ngModel)]="filterFileName" placeholder="ค้นหาชื่อไฟล์"
+        class="input-base min-w-55 flex-1">
+      <select [(ngModel)]="filterStatus" class="input-base">
+        <option value="">-- ทุกสถานะ --</option>
+        <option value="UPLOADED">UPLOADED</option>
+        <option value="PROCESSING">PROCESSING</option>
+        <option value="COMPLETED">COMPLETED</option>
+      </select>
+      <button (click)="onSearch()" class="btn-primary">
+        ค้นหา
+      </button>
+      <button (click)="onReset()" class="btn-secondary">
+        รีเซ็ต
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="text-center py-12 text-gray-400">กำลังโหลด...</div>
+
+  <div *ngIf="!loading()" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <table class="table-base">
+      <thead>
+        <tr class="table-head">
+          <th class="px-5 py-3 text-left">ID</th>
+          <th class="px-5 py-3 text-left">ชื่อไฟล์</th>
+          <th class="px-5 py-3 text-left">วันที่อัปโหลด</th>
+          <th class="px-5 py-3 text-center">รายการทั้งหมด</th>
+          <th class="px-5 py-3 text-center">สำเร็จ</th>
+          <th class="px-5 py-3 text-center">ไม่สำเร็จ</th>
+          <th class="px-5 py-3 text-center">สถานะ</th>
+          <th class="px-5 py-3 text-center">รายละเอียด</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <tr *ngFor="let item of items()" class="table-row">
+          <td class="px-5 py-3 text-gray-700">{{ item.uploadId }}</td>
+          <td class="px-5 py-3 text-gray-800 font-medium">{{ item.fileName }}</td>
+          <td class="px-5 py-3 text-gray-500">{{ item.uploadDate | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td class="px-5 py-3 text-center text-gray-700">{{ item.totalRecord }}</td>
+          <td class="px-5 py-3 text-center text-green-600 font-medium">{{ item.totalSuccess }}</td>
+          <td class="px-5 py-3 text-center text-red-500 font-medium">{{ item.totalFailed }}</td>
+          <td class="px-5 py-3 text-center">
+            <span class="badge"
+              [ngClass]="{
+                'badge-success': item.status === 'COMPLETED',
+                'badge-info': item.status === 'UPLOADED',
+                'badge-warning': item.status === 'PROCESSING'
+              }">
+              {{ item.status }}
+            </span>
+          </td>
+          <td class="px-5 py-3 text-center">
+            <button (click)="goToDetail(item.uploadId)"
+              class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-1.5 rounded-lg text-xs font-medium transition-colors">
+              ดู
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="items().length === 0">
+          <td colspan="8" class="px-5 py-12 text-center text-gray-400">ไม่พบข้อมูล</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex justify-center items-center gap-4 mt-6">
+    <button (click)="prevPage()" [disabled]="page() === 1" class="pagination-btn">
+      ◀ ก่อนหน้า
+    </button>
+    <span class="text-sm text-gray-500">หน้า {{ page() }} | ทั้งหมด {{ total() }} รายการ</span>
+    <button (click)="nextPage()" [disabled]="page() * pageSize >= total()" class="pagination-btn">
+      ถัดไป ▶
+    </button>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+app:
+  name: batch-process-upload
+
+database:
+  host: localhost
+  port: 1234
+  username: postgres
+  password: "1234"
+  dbname: intern_db
+  schema: upload_schema
