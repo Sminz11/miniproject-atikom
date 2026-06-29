@@ -1,0 +1,62 @@
+<div>
+  <h2>Audit Log</h2>
+
+  <nz-card style="margin-bottom:16px">
+    <nz-space>
+      <nz-select *nzSpaceItem [(ngModel)]="filterAction"
+        style="width:200px" nzPlaceHolder="All Actions">
+        <nz-option *ngFor="let opt of actionOptions"
+          [nzValue]="opt.value" [nzLabel]="opt.label">
+        </nz-option>
+      </nz-select>
+      <button *nzSpaceItem nz-button nzType="primary" (click)="onSearch()">
+        <span nz-icon nzType="search"></span> Search
+      </button>
+      <button *nzSpaceItem nz-button (click)="onReset()">
+        <span nz-icon nzType="reload"></span> Reset
+      </button>
+    </nz-space>
+  </nz-card>
+
+  <nz-card>
+    <nz-table
+      [nzData]="items"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [nzPageIndex]="page"
+      [nzPageSize]="pageSize"
+      nzShowSizeChanger
+      (nzPageIndexChange)="onPageChange($event)"
+      nzFrontPagination="false">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Action</th>
+          <th>Ref ID</th>
+          <th>Description</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items">
+          <td>{{ item.auditId }}</td>
+          <td>{{ item.username }}</td>
+          <td>
+            <nz-tag [nzColor]="getActionColor(item.action)">
+              {{ item.action }}
+            </nz-tag>
+          </td>
+          <td>{{ item.refId }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.createdDate | date:'dd/MM/yyyy HH:mm' }}</td>
+        </tr>
+        <tr *ngIf="items.length === 0 && !loading">
+          <td colspan="6" style="text-align:center;color:#999;padding:40px">
+            No data
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-card>
+</div>

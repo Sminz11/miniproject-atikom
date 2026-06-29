@@ -1,0 +1,19 @@
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1890ff,#096dd9)">
+  <nz-card style="width:400px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
+    <div style="text-align:center;margin-bottom:32px">
+      <span nz-icon nzType="cloud-upload" style="font-size:48px;color:#1890ff"></span>
+      <h2 style="margin-top:16px;color:#1890ff">Upload System</h2>
+      <p style="color:#888">ระบบจัดการไฟล์อัปโหลด</p>
+    </div>
+
+    <button nz-button nzType="primary" nzSize="large" nzBlock
+      [nzLoading]="loading" (click)="onLogin()">
+      <span nz-icon nzType="login"></span>
+      เข้าสู่ระบบด้วย OAuth2
+    </button>
+
+    <div style="text-align:center;margin-top:16px;color:#888;font-size:12px">
+      Mock OAuth2 Authentication
+    </div>
+  </nz-card>
+</div>

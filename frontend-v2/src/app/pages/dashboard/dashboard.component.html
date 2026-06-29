@@ -1,0 +1,85 @@
+<div>
+  <h2 style="margin-bottom:24px">Dashboard</h2>
+
+  <div *ngIf="loading" style="text-align:center;padding:40px">
+    <span nz-icon nzType="loading" style="font-size:32px;color:#1890ff"></span>
+  </div>
+
+  <ng-container *ngIf="!loading && summary">
+    <!-- Summary Cards -->
+    <div nz-row [nzGutter]="16" style="margin-bottom:24px">
+      <div nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            nzTitle="Upload ทั้งหมด"
+            [nzValue]="summary.totalUpload"
+            [nzPrefix]="uploadIcon"
+            [nzValueStyle]="{ color: '#1890ff' }">
+          </nz-statistic>
+          <ng-template #uploadIcon>
+            <span nz-icon nzType="upload"></span>
+          </ng-template>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            nzTitle="รายการสำเร็จ"
+            [nzValue]="summary.totalSuccess"
+            [nzValueStyle]="{ color: '#52c41a' }">
+          </nz-statistic>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            nzTitle="รายการไม่สำเร็จ"
+            [nzValue]="summary.totalFailed"
+            [nzValueStyle]="{ color: '#ff4d4f' }">
+          </nz-statistic>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-card>
+          <nz-statistic
+            nzTitle="รอประมวลผล"
+            [nzValue]="summary.totalPending"
+            [nzValueStyle]="{ color: '#faad14' }">
+          </nz-statistic>
+        </nz-card>
+      </div>
+    </div>
+
+    <!-- Recent Uploads -->
+    <nz-card nzTitle="Upload ล่าสุด 5 รายการ">
+      <nz-table [nzData]="summary.recentUploads" [nzShowPagination]="false" nzSize="small">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>ชื่อไฟล์</th>
+            <th>วันที่อัปโหลด</th>
+            <th>รายการทั้งหมด</th>
+            <th>สำเร็จ</th>
+            <th>ไม่สำเร็จ</th>
+            <th>สถานะ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of summary.recentUploads">
+            <td>{{ item.uploadId }}</td>
+            <td>{{ item.fileName }}</td>
+            <td>{{ item.uploadDate | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ item.totalRecord }}</td>
+            <td style="color:#52c41a">{{ item.totalSuccess }}</td>
+            <td style="color:#ff4d4f">{{ item.totalFailed }}</td>
+            <td>
+              <nz-tag [nzColor]="getStatusColor(item.status)">
+                {{ item.status }}
+              </nz-tag>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </nz-card>
+  </ng-container>
+</div>

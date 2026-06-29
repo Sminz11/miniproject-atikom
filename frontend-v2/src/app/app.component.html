@@ -1,0 +1,56 @@
+<ng-container *ngIf="isLoggedIn; else loginPage">
+  <nz-layout style="min-height: 100vh;">
+    <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" nzWidth="220px">
+      <div style="height:64px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:16px;padding:16px">
+        <span *ngIf="!isCollapsed">Upload System</span>
+        <span *ngIf="isCollapsed">US</span>
+      </div>
+      <ul nz-menu nzTheme="dark" nzMode="inline">
+        <li nz-menu-item routerLink="/dashboard" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="dashboard"></span>
+          <span>Dashboard</span>
+        </li>
+        <li nz-menu-item routerLink="/upload" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="upload"></span>
+          <span>Upload File</span>
+        </li>
+        <li nz-menu-item routerLink="/history" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="history"></span>
+          <span>Upload History</span>
+        </li>
+        <li nz-menu-item routerLink="/audit-log" routerLinkActive="ant-menu-item-selected">
+          <span nz-icon nzType="audit"></span>
+          <span>Audit Log</span>
+        </li>
+      </ul>
+    </nz-sider>
+
+    <nz-layout>
+      <nz-header style="background:white;padding:0 24px;display:flex;align-items:center;justify-content:flex-end;box-shadow:0 1px 4px rgba(0,0,0,0.1)">
+        <div nz-dropdown [nzDropdownMenu]="userMenu" style="cursor:pointer;display:flex;align-items:center;gap:8px">
+          <nz-avatar nzIcon="user" style="background:#1890ff"></nz-avatar>
+          <span>{{ username }}</span>
+          <span nz-icon nzType="down"></span>
+        </div>
+        <nz-dropdown-menu #userMenu="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item (click)="onLogout()">
+              <span nz-icon nzType="logout"></span>
+              <span>ออกจากระบบ</span>
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      </nz-header>
+
+      <nz-content style="margin:24px;background:white;padding:24px;border-radius:8px;min-height:280px">
+        <router-outlet></router-outlet>
+      </nz-content>
+    </nz-layout>
+  </nz-layout>
+</ng-container>
+
+<ng-template #loginPage>
+  <div style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999">
+    <router-outlet></router-outlet>
+  </div>
+</ng-template>

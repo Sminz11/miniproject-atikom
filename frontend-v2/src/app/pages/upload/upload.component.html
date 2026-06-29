@@ -1,0 +1,56 @@
+<div style="max-width:600px;margin:0 auto">
+  <h2>Upload File</h2>
+
+  <nz-card>
+    <div style="text-align:center;border:2px dashed #d9d9d9;border-radius:8px;padding:40px;cursor:pointer;transition:border-color 0.3s"
+      (mouseenter)="onDragEnter($event)"
+      (mouseleave)="onDragLeave($event)">
+      <span nz-icon nzType="inbox" style="font-size:48px;color:#1890ff"></span>
+      <p style="margin-top:16px;color:#666">เลือกไฟล์ .txt ที่ต้องการอัปโหลด</p>
+      <input type="file" accept=".txt" (change)="onFileSelect($event)"
+        style="display:none" #fileInput>
+      <button nz-button nzType="default" (click)="fileInput.click()">
+        <span nz-icon nzType="folder-open"></span>
+        เลือกไฟล์
+      </button>
+    </div>
+
+    <div *ngIf="selectedFile" style="margin-top:16px">
+      <nz-alert nzType="success"
+        [nzMessage]="'เลือกไฟล์: ' + selectedFile.name"
+        nzShowIcon>
+      </nz-alert>
+    </div>
+
+    <div *ngIf="error" style="margin-top:16px">
+      <nz-alert nzType="error" [nzMessage]="error" nzShowIcon></nz-alert>
+    </div>
+
+    <button nz-button nzType="primary" nzSize="large" nzBlock
+      [nzLoading]="loading" [disabled]="!selectedFile"
+      (click)="onUpload()" style="margin-top:16px">
+      <span nz-icon nzType="upload"></span>
+      {{ loading ? 'กำลังอัปโหลด...' : 'อัปโหลด' }}
+    </button>
+  </nz-card>
+
+  <nz-card *ngIf="result" style="margin-top:24px" nzTitle="✅ อัปโหลดสำเร็จ!">
+    <nz-descriptions [nzColumn]="2" nzBordered>
+      <nz-descriptions-item nzTitle="Upload ID">
+        {{ result.uploadId }}
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="ชื่อไฟล์">
+        {{ result.fileName }}
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="จำนวนรายการ">
+        {{ result.totalRecord }}
+      </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="สถานะ">
+        <nz-tag nzColor="processing">{{ result.status }}</nz-tag>
+      </nz-descriptions-item>
+    </nz-descriptions>
+    <button nz-button nzType="primary" style="margin-top:16px" (click)="goToHistory()">
+      ดูประวัติ Upload →
+    </button>
+  </nz-card>
+</div>

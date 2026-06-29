@@ -1,0 +1,68 @@
+<div>
+  <h2>Upload History</h2>
+
+  <nz-card style="margin-bottom:16px">
+    <nz-space>
+      <input *nzSpaceItem nz-input placeholder="ค้นหาชื่อไฟล์"
+        [(ngModel)]="filterFileName" style="width:220px">
+      <nz-select *nzSpaceItem [(ngModel)]="filterStatus"
+        style="width:160px" nzPlaceHolder="-- ทุกสถานะ --">
+        <nz-option nzValue="" nzLabel="-- ทุกสถานะ --"></nz-option>
+        <nz-option nzValue="UPLOADED" nzLabel="UPLOADED"></nz-option>
+        <nz-option nzValue="PROCESSING" nzLabel="PROCESSING"></nz-option>
+        <nz-option nzValue="COMPLETED" nzLabel="COMPLETED"></nz-option>
+      </nz-select>
+      <button *nzSpaceItem nz-button nzType="primary" (click)="onSearch()">
+        <span nz-icon nzType="search"></span> ค้นหา
+      </button>
+      <button *nzSpaceItem nz-button (click)="onReset()">
+        <span nz-icon nzType="reload"></span> รีเซ็ต
+      </button>
+    </nz-space>
+  </nz-card>
+
+  <nz-card>
+    <nz-table
+      [nzData]="items"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [nzPageIndex]="page"
+      [nzPageSize]="pageSize"
+      nzShowSizeChanger
+      (nzPageIndexChange)="onPageChange($event)"
+      nzFrontPagination="false">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>ชื่อไฟล์</th>
+          <th>วันที่อัปโหลด</th>
+          <th nzAlign="center">รายการทั้งหมด</th>
+          <th nzAlign="center">สำเร็จ</th>
+          <th nzAlign="center">ไม่สำเร็จ</th>
+          <th nzAlign="center">สถานะ</th>
+          <th nzAlign="center">รายละเอียด</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items">
+          <td>{{ item.uploadId }}</td>
+          <td>{{ item.fileName }}</td>
+          <td>{{ item.uploadDate | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td nzAlign="center">{{ item.totalRecord }}</td>
+          <td nzAlign="center" style="color:#52c41a">{{ item.totalSuccess }}</td>
+          <td nzAlign="center" style="color:#ff4d4f">{{ item.totalFailed }}</td>
+          <td nzAlign="center">
+            <nz-tag [nzColor]="getStatusColor(item.status)">
+              {{ item.status }}
+            </nz-tag>
+          </td>
+          <td nzAlign="center">
+            <button nz-button nzType="link" (click)="goToDetail(item.uploadId)">
+              <span nz-icon nzType="eye"></span> ดู
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-card>
+</div>

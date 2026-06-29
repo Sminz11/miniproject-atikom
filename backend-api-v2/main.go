@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend-api-v2/handler"
+	"backend-api-v2/middleware"
 	"backend-api-v2/repository"
 	"backend-api-v2/service"
 	"database/sql"
@@ -53,15 +54,26 @@ func main() {
 	}
 	log.Println("เชื่อมต่อ Database สำเร็จ")
 
-	// สร้าง Layer ต่างๆ
-	repo := repository.NewUploadRepository(db, cfg.Database.Schema)
-	svc := service.NewUploadService(repo)
-	h := handler.NewUploadHandler(svc)
+	// สร้าง Repository
+	uploadRepo := repository.NewUploadRepository(db, cfg.Database.Schema)
+	auditRepo := repository.NewAuditLogRepository(db, cfg.Database.Schema)
+	dashboardRepo := repository.NewDashboardRepository(db, cfg.Database.Schema)
+	retryRepo := repository.NewRetryRepository(db, cfg.Database.Schema)
+
+	// สร้าง Service
+	uploadSvc := service.NewUploadService(uploadRepo)
+
+	// สร้าง Handler
+	uploadHandler := handler.NewUploadHandler(uploadSvc)
+	authHandler := handler.NewAuthHandler(auditRepo)
+	dashboardHandler := handler.NewDashboardHandler(dashboardRepo)
+	retryHandler := handler.NewRetryHandler(retryRepo, auditRepo)
+	auditLogHandler := handler.NewAuditLogHandler(auditRepo)
 
 	// สร้าง Router
 	r := gin.Default()
 
-	// CORS Middleware - อนุญาตให้ Angular (localhost:4200) เรียก API ได้
+	// CORS Middleware
 	r.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -75,9 +87,33 @@ func main() {
 
 	api := r.Group("/api/v1")
 	{
-		api.POST("/uploads", h.Upload)
-		api.GET("/uploads", h.GetHistory)
-		api.GET("/uploads/:uploadId/details", h.GetDetail)
+		// OAuth Routes (ไม่ต้อง Auth)
+		oauth := api.Group("/oauth")
+		{
+			oauth.GET("/authorize", authHandler.Authorize)
+			oauth.POST("/token", authHandler.Token)
+		}
+
+		// Protected Routes (ต้อง Auth)
+		protected := api.Group("")
+		protected.Use(middleware.AuthMiddleware())
+		{
+			protected.GET("/me", authHandler.Me)
+			protected.POST("/logout", authHandler.Logout)
+
+			// Upload Routes
+			protected.POST("/uploads", uploadHandler.Upload)
+			protected.GET("/uploads", uploadHandler.GetHistory)
+			protected.GET("/uploads/:uploadId/details", uploadHandler.GetDetail)
+			protected.POST("/uploads/:uploadId/details/:detailId/retry", retryHandler.Retry)
+			protected.GET("/uploads/:uploadId/details/export", retryHandler.ExportCSV)
+
+			// Dashboard
+			protected.GET("/dashboard/summary", dashboardHandler.GetSummary)
+
+			// Audit Log
+			protected.GET("/audit-logs", auditLogHandler.GetLogs)
+		}
 	}
 
 	log.Printf("Server เริ่มที่ port %d", cfg.App.Port)
