@@ -1,5 +1,6 @@
 <ng-container *ngIf="isLoggedIn; else loginPage">
   <nz-layout style="min-height: 100vh;">
+    <!-- Sidebar -->
     <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" nzWidth="220px">
       <div style="height:64px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:16px;padding:16px">
         <span *ngIf="!isCollapsed">Upload System</span>
@@ -25,7 +26,9 @@
       </ul>
     </nz-sider>
 
+    <!-- Main Content -->
     <nz-layout>
+      <!-- Header -->
       <nz-header style="background:white;padding:0 24px;display:flex;align-items:center;justify-content:flex-end;box-shadow:0 1px 4px rgba(0,0,0,0.1)">
         <div nz-dropdown [nzDropdownMenu]="userMenu" style="cursor:pointer;display:flex;align-items:center;gap:8px">
           <nz-avatar nzIcon="user" style="background:#1890ff"></nz-avatar>
@@ -36,13 +39,28 @@
           <ul nz-menu>
             <li nz-menu-item (click)="onLogout()">
               <span nz-icon nzType="logout"></span>
-              <span>ออกจากระบบ</span>
+              <span>Logout</span>
             </li>
           </ul>
         </nz-dropdown-menu>
       </nz-header>
 
-      <nz-content style="margin:24px;background:white;padding:24px;border-radius:8px;min-height:280px">
+      <!-- Breadcrumb -->
+      <div style="margin:16px 24px 0">
+        <nz-breadcrumb>
+          <nz-breadcrumb-item>
+            <a routerLink="/dashboard">
+              <span nz-icon nzType="home"></span>
+            </a>
+          </nz-breadcrumb-item>
+          <nz-breadcrumb-item *ngFor="let item of breadcrumbs">
+            {{ item }}
+          </nz-breadcrumb-item>
+        </nz-breadcrumb>
+      </div>
+
+      <!-- Content -->
+      <nz-content style="margin:16px 24px 24px;background:white;padding:24px;border-radius:8px;min-height:280px">
         <router-outlet></router-outlet>
       </nz-content>
     </nz-layout>
@@ -50,7 +68,7 @@
 </ng-container>
 
 <ng-template #loginPage>
-  <div style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999">
+  <div style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;background:white">
     <router-outlet></router-outlet>
   </div>
 </ng-template>

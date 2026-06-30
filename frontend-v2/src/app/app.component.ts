@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -30,11 +31,38 @@ import { AuthService } from './services/auth.service';
 export class AppComponent implements OnInit {
   isCollapsed = false;
   username = '';
+  breadcrumbs: string[] = [];
 
-  constructor(private authService: AuthService, private router: Router) {}
+  private breadcrumbMap: { [key: string]: string } = {
+    'dashboard': 'Dashboard',
+    'upload': 'Upload File',
+    'history': 'Upload History',
+    'audit-log': 'Audit Log',
+  };
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.username = this.authService.getUsername();
+    this.updateBreadcrumb();
+
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.updateBreadcrumb();
+    });
+  }
+
+  updateBreadcrumb() {
+    const url = this.router.url.split('?')[0];
+    const segments = url.split('/').filter(s => s);
+    this.breadcrumbs = segments
+      .map(seg => this.breadcrumbMap[seg] || (isNaN(Number(seg)) ? seg : `#${seg}`))
+      .filter(Boolean);
   }
 
   get isLoggedIn(): boolean {

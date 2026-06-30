@@ -49,11 +49,19 @@ func main() {
 	log.Println("เชื่อมต่อ Database สำเร็จ")
 
 	repo := repository.NewBatchRepository(db, cfg.Database.Schema)
+	auditRepo := repository.NewAuditLogRepository(db, cfg.Database.Schema)
 	svc := service.NewBatchService(repo)
 
+	// บันทึก Audit Log ตอนเริ่ม Batch
+	auditRepo.Insert("system", "BATCH_PROCESS", "", "Batch process started")
+
 	if err := svc.ProcessAll(); err != nil {
+		auditRepo.Insert("system", "BATCH_PROCESS", "", fmt.Sprintf("Batch process failed: %v", err))
 		log.Fatal("Batch error:", err)
 	}
+
+	// บันทึก Audit Log ตอนจบ Batch
+	auditRepo.Insert("system", "BATCH_PROCESS", "", "Batch process completed")
 
 	log.Println("=== Batch Process Upload เสร็จสิ้น ===")
 }
